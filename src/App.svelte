@@ -20,40 +20,38 @@
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
-    function shareQuote(index) {
-        const quote = quotes[index];
-        const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
+    function updateMetaTags(quote, author) {
+        document.querySelector('meta[property="og:description"]').setAttribute("content", `"${quote}" - ${author}`);
+        document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+        document.querySelector('meta[name="twitter:description"]').setAttribute("content", `"${quote}" - ${author}`);
+    }
 
-        FB.ui({
-            method: 'share',
-            href: shareUrl,
-        }, function(response){
-            if (response && !response.error_message) {
+    async function shareQuote(index) {
+        const quote = quotes[index];
+        const shareData = {
+            title: 'Inspiring Quote',
+            text: `"${quote.text}" - ${quote.author}`,
+            url: window.location.href // Share the current page URL
+        };
+
+        // Update meta tags dynamically for social media preview
+        updateMetaTags(quote.text, quote.author);
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
                 alert('Quote shared successfully');
             } else {
-                alert('Error while sharing quote');
+                alert('Web Share API is not supported in your browser.');
             }
-        });
+        } catch (error) {
+            console.error('Error sharing quote:', error);
+            alert('Error while sharing quote');
+        }
     }
 
     onMount(() => {
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '1569555470261514', // Replace with your Facebook App ID
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v12.0'
-            });
-        };
-
-        // Load the Facebook SDK
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+        // Any additional setup can go here if needed
     });
 </script>
 
