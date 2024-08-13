@@ -116,7 +116,7 @@
     .quote-template {
         position: relative;
         padding: 20px;
-        background: url('/pexel.jpg') no-repeat center center;
+        background: url('/pexel.jpg') no-repeat center center, #333;
         background-size: cover;
         border-radius: 8px;
         color: white;
