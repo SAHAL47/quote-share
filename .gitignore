@@ -5,3 +5,4 @@
 .env
 dist/
 .svelte-kit/
+.vercel
