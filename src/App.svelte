@@ -20,40 +20,31 @@
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
-    function updateMetaTags(quote, author) {
-        document.querySelector('meta[property="og:description"]').setAttribute("content", `"${quote}" - ${author}`);
-        document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
-        document.querySelector('meta[name="twitter:description"]').setAttribute("content", `"${quote}" - ${author}`);
-    }
-
     async function shareQuote(index) {
         const quote = quotes[index];
         const shareData = {
-            title: 'Inspiring Quote',
+            title: 'Quote Sharing App',
             text: `"${quote.text}" - ${quote.author}`,
-            url: window.location.href // Share the current page URL
+            url: 'https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app'
         };
 
-        // Update meta tags dynamically for social media preview
-        updateMetaTags(quote.text, quote.author);
-
         try {
-            if (navigator.share) {
-                await navigator.share(shareData);
-                alert('Quote shared successfully');
-            } else {
-                alert('Web Share API is not supported in your browser.');
-            }
-        } catch (error) {
-            console.error('Error sharing quote:', error);
-            alert('Error while sharing quote');
+            await navigator.share(shareData);
+            alert('Quote shared successfully');
+        } catch (err) {
+            alert('Error while sharing quote: ' + err.message);
         }
     }
-
-    onMount(() => {
-        // Any additional setup can go here if needed
-    });
 </script>
+
+<svelte:head>
+    <title>Quote Sharing App</title>
+    <meta property="og:title" content="Quote Sharing App" />
+    <meta property="og:description" content="Share your favorite quotes with friends." />
+    <meta property="og:image" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg" />
+    <meta property="og:url" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app" />
+    <meta property="og:type" content="website" />
+</svelte:head>
 
 <style>
     :global(body) {
@@ -114,7 +105,7 @@
     .quote-template {
         position: relative;
         padding: 20px;
-        background: url('/pexel.jpg') no-repeat center center, #333;
+        background: url('/pexel.jpg') no-repeat center center;
         background-size: cover;
         border-radius: 8px;
         color: white;
