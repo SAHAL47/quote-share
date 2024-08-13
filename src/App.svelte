@@ -22,7 +22,7 @@
 
     function shareQuote(index) {
         const quote = quotes[index];
-        const shareUrl = `https://localhost:8080/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
+        const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
         
         // Construct the Facebook share URL
         const facebookShareUrl = `https://www.facebook.com/dialog/share?app_id=1569555470261514&display=popup&href=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(window.location.href)}`;
