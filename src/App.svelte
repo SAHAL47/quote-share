@@ -210,7 +210,7 @@ input:focus, button:focus {
             <div class="author">- {quote.author}</div>
             <div class="controls">
                 <button on:click={() => shareQuote(index)}>Share</button>
-                <button on:click={() => removeQuote(index)}>Delete</button>
+                <button on:click={() => removeQuote(index)}>Remove</button>
             </div>
         </div>
     {/each}
