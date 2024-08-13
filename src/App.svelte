@@ -23,16 +23,37 @@
     function shareQuote(index) {
         const quote = quotes[index];
         const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
-        
-        // Construct the Facebook share URL
-        const facebookShareUrl = `https://www.facebook.com/dialog/share?app_id=1569555470261514&display=popup&href=${encodeURIComponent(shareUrl)}&redirect_uri=${encodeURIComponent(window.location.href)}`;
 
-        // Open the Facebook share dialog in a new window
-        window.open(facebookShareUrl, 'facebook-share-dialog', 'width=800,height=600');
+        FB.ui({
+            method: 'share',
+            href: shareUrl,
+        }, function(response){
+            if (response && !response.error_message) {
+                alert('Quote shared successfully');
+            } else {
+                alert('Error while sharing quote');
+            }
+        });
     }
 
     onMount(() => {
-        // Initialization for other parts of your app can be placed here
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '1569555470261514', // Replace with your Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v12.0'
+            });
+        };
+
+        // Load the Facebook SDK
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     });
 </script>
 
