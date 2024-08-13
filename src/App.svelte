@@ -1,78 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Sharing App</title>
-    <meta property="og:title" content="Quote Sharing App" />
-    <meta property="og:description" content="Share your favorite quotes with friends." />
-    <meta property="og:image" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg" />
-    <meta property="og:url" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app" />
-    <meta property="og:type" content="website" />
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-</head>
-<body>
-    <script>
-        import { onMount } from 'svelte';
+<script>
+    import { onMount } from 'svelte';
 
-        let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
-        let newQuote = '';
-        let personName = '';
+    let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+    let newQuote = '';
+    let personName = '';
 
-        function addQuote(event) {
-            event.preventDefault();
-            if (newQuote && personName) {
-                quotes = [...quotes, { text: newQuote, author: personName }];
-                localStorage.setItem('quotes', JSON.stringify(quotes));
-                newQuote = '';
-                personName = '';
-            }
-        }
-
-        function removeQuote(index) {
-            quotes = quotes.filter((_, i) => i !== index);
+    function addQuote(event) {
+        event.preventDefault();
+        if (newQuote && personName) {
+            quotes = [...quotes, { text: newQuote, author: personName }];
             localStorage.setItem('quotes', JSON.stringify(quotes));
+            newQuote = '';
+            personName = '';
         }
+    }
 
-        function shareQuote(index) {
-            const quote = quotes[index];
-            const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
+    function removeQuote(index) {
+        quotes = quotes.filter((_, i) => i !== index);
+        localStorage.setItem('quotes', JSON.stringify(quotes));
+    }
 
-            FB.ui({
-                method: 'share',
-                href: shareUrl,
-            }, function(response){
-                if (response && !response.error_message) {
-                    alert('Quote shared successfully');
-                } else {
-                    alert('Error while sharing quote');
-                }
-            });
-        }
+    function shareQuote(index) {
+        const quote = quotes[index];
+        const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
 
-        onMount(() => {
-            window.fbAsyncInit = function() {
-                FB.init({
-                    appId      : '1569555470261514', // Replace with your Facebook App ID
-                    cookie     : true,
-                    xfbml      : true,
-                    version    : 'v12.0'
-                });
-            };
-
-            // Load the Facebook SDK
-            (function(d, s, id){
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) {return;}
-                js = d.createElement(s); js.id = id;
-                js.src = "https://connect.facebook.net/en_US/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
+        FB.ui({
+            method: 'share',
+            href: shareUrl,
+        }, function(response){
+            if (response && !response.error_message) {
+                alert('Quote shared successfully');
+            } else {
+                alert('Error while sharing quote');
+            }
         });
-    </script>
+    }
 
-    <style>
-       :global(body) {
+    onMount(() => {
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '1569555470261514', // Replace with your Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v12.0'
+            });
+        };
+
+        // Load the Facebook SDK
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    });
+</script>
+
+<style>
+    :global(body) {
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
@@ -194,29 +180,27 @@
             font-size: 0.9em;
         }
     }
-    </style>
+</style>
 
-    <div class="container">
-        <h1>Quote Sharing App</h1>
+<div class="container">
+    <h1>Quote Sharing App</h1>
 
-        <form on:submit={addQuote}>
-            <input type="text" bind:value={newQuote} placeholder="Enter your quote" required>
-            <input type="text" bind:value={personName} placeholder="Your name" required>
-            <button type="submit">Add Quote</button>
-        </form>
-    </div>
+    <form on:submit={addQuote}>
+        <input type="text" bind:value={newQuote} placeholder="Enter your quote" required>
+        <input type="text" bind:value={personName} placeholder="Your name" required>
+        <button type="submit">Add Quote</button>
+    </form>
+</div>
 
-    <div id="quote-container" class="quote-container">
-        {#each quotes as quote, index}
-            <div class="quote-template">
-                <span>"{quote.text}"</span>
-                <div class="author">- {quote.author}</div>
-                <div class="controls">
-                    <button on:click={() => shareQuote(index)}>Share</button>
-                    <button on:click={() => removeQuote(index)}>Remove</button>
-                </div>
+<div id="quote-container" class="quote-container">
+    {#each quotes as quote, index}
+        <div class="quote-template">
+            <span>"{quote.text}"</span>
+            <div class="author">- {quote.author}</div>
+            <div class="controls">
+                <button on:click={() => shareQuote(index)}>Share</button>
+                <button on:click={() => removeQuote(index)}>Remove</button>
             </div>
-        {/each}
-    </div>
-</body>
-</html>
+        </div>
+    {/each}
+</div>
