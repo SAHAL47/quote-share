@@ -1,217 +1,222 @@
-<script>
-    import { onMount } from 'svelte';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Sharing App</title>
+    <meta property="og:title" content="Quote Sharing App" />
+    <meta property="og:description" content="Share your favorite quotes with friends." />
+    <meta property="og:image" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg" />
+    <meta property="og:url" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app" />
+    <meta property="og:type" content="website" />
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+</head>
+<body>
+    <script>
+        import { onMount } from 'svelte';
 
-    let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
-    let newQuote = '';
-    let personName = '';
+        let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+        let newQuote = '';
+        let personName = '';
 
-    function addQuote(event) {
-        event.preventDefault();
-        if (newQuote && personName) {
-            quotes = [...quotes, { text: newQuote, author: personName }];
-            localStorage.setItem('quotes', JSON.stringify(quotes));
-            newQuote = '';
-            personName = '';
-        }
-    }
-
-    function removeQuote(index) {
-        quotes = quotes.filter((_, i) => i !== index);
-        localStorage.setItem('quotes', JSON.stringify(quotes));
-    }
-
-    function shareQuote(index) {
-        const quote = quotes[index];
-        const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
-
-        FB.ui({
-            method: 'share',
-            href: shareUrl,
-        }, function(response){
-            if (response && !response.error_message) {
-                alert('Quote shared successfully');
-            } else {
-                alert('Error while sharing quote');
+        function addQuote(event) {
+            event.preventDefault();
+            if (newQuote && personName) {
+                quotes = [...quotes, { text: newQuote, author: personName }];
+                localStorage.setItem('quotes', JSON.stringify(quotes));
+                newQuote = '';
+                personName = '';
             }
+        }
+
+        function removeQuote(index) {
+            quotes = quotes.filter((_, i) => i !== index);
+            localStorage.setItem('quotes', JSON.stringify(quotes));
+        }
+
+        function shareQuote(index) {
+            const quote = quotes[index];
+            const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
+
+            FB.ui({
+                method: 'share',
+                href: shareUrl,
+            }, function(response){
+                if (response && !response.error_message) {
+                    alert('Quote shared successfully');
+                } else {
+                    alert('Error while sharing quote');
+                }
+            });
+        }
+
+        onMount(() => {
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId      : '1569555470261514', // Replace with your Facebook App ID
+                    cookie     : true,
+                    xfbml      : true,
+                    version    : 'v12.0'
+                });
+            };
+
+            // Load the Facebook SDK
+            (function(d, s, id){
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) {return;}
+                js = d.createElement(s); js.id = id;
+                js.src = "https://connect.facebook.net/en_US/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
         });
+    </script>
+
+    <style>
+       :global(body) {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+        margin: 0;
     }
 
-    onMount(() => {
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '1569555470261514', // Replace with your Facebook App ID
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v12.0'
-            });
-        };
-
-        // Load the Facebook SDK
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    });
-</script>
-
-<style>
-   :global(body) {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-    margin: 0;
-}
-
-/* Container styles */
-.container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%; /* Responsive width */
-    max-width: 400px; /* Maximum width */
-    text-align: center;
-    margin-bottom: 20px; /* Space between container and quotes */
-}
-
-/* Heading styles */
-h1 {
-    margin-bottom: 20px; /* Space below heading */
-}
-
-/* Form styles */
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center form elements horizontally */
-    margin-bottom: 20px; /* Space between form and quotes */
-}
-
-/* Input and button styles */
-input, button {
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
-    max-width: 300px; /* Max width for inputs and buttons */
-}
-
-input:focus, button:focus {
-    outline: none;
-    border-color: #007bff;
-}
-
-/* Quote container styles */
-.quote-container {
-    width: 90%; /* Responsive width */
-    max-width: 400px; /* Maximum width */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center quotes horizontally */
-    overflow-y: auto; /* Allow scrolling if there are many quotes */
-}
-
-/* Individual quote styles */
-.quote-template {
-    position: relative;
-    padding: 20px;
-    background: url('/pexel.jpg') no-repeat center center;
-    background-size: cover;
-    border-radius: 8px;
-    color: white;
-    text-align: center;
-    margin: 10px 0;
-    width: 100%; /* Full width of the container */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-}
-
-/* Text inside quote */
-.quote-template span {
-    display: block;
-    font-size: 1.2em; /* Adjusted font size for responsiveness */
-    font-style: italic;
-    margin-bottom: 10px;
-}
-
-.quote-template .author {
-    font-size: 1em; /* Adjusted font size for responsiveness */
-    font-weight: bold;
-}
-
-/* Controls styles */
-.controls {
-    margin-top: 10px;
-}
-
-.controls button {
-    padding: 8px 16px; /* Adjusted padding */
-    margin: 5px;
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em; /* Adjusted font size */
-}
-
-.controls button:hover {
-    background: #0056b3;
-}
-
-/* Media queries for responsiveness */
-@media (max-width: 600px) {
     .container {
-        width: 95%;
-        max-width: none; /* Remove maximum width for small screens */
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    input, button {
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    input:focus, button:focus {
+        outline: none;
+        border-color: #007bff;
     }
 
     .quote-container {
-        width: 95%;
-        max-width: none; /* Remove maximum width for small screens */
+        width: 90%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
     }
 
     .quote-template {
-        font-size: 1em; /* Adjust font size for smaller screens */
+        position: relative;
+        padding: 20px;
+        background: url('/pexel.jpg') no-repeat center center;
+        background-size: cover;
+        border-radius: 8px;
+        color: white;
+        text-align: center;
+        margin: 10px 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .quote-template span {
-        font-size: 1em; /* Adjust font size for smaller screens */
+        display: block;
+        font-size: 1.2em;
+        font-style: italic;
+        margin-bottom: 10px;
     }
 
     .quote-template .author {
-        font-size: 0.9em; /* Adjust font size for smaller screens */
+        font-size: 1em;
+        font-weight: bold;
     }
-}
-</style>
 
-<div class="container">
-    <h1>Quote Sharing App</h1>
+    .controls {
+        margin-top: 10px;
+    }
 
-    <!-- Form to add new quotes -->
-    <form on:submit={addQuote}>
-        <input type="text" bind:value={newQuote} placeholder="Enter your quote" required>
-        <input type="text" bind:value={personName} placeholder="Your name" required>
-        <button type="submit">Add Quote</button>
-    </form>
-</div>
+    .controls button {
+        padding: 8px 16px;
+        margin: 5px;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+    }
 
-<!-- Container to display quotes -->
-<div id="quote-container" class="quote-container">
-    {#each quotes as quote, index}
-        <div class="quote-template">
-            <span>"{quote.text}"</span>
-            <div class="author">- {quote.author}</div>
-            <div class="controls">
-                <button on:click={() => shareQuote(index)}>Share</button>
-                <button on:click={() => removeQuote(index)}>Remove</button>
+    .controls button:hover {
+        background: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            width: 95%;
+            max-width: none;
+        }
+
+        .quote-container {
+            width: 95%;
+            max-width: none;
+        }
+
+        .quote-template {
+            font-size: 1em;
+        }
+
+        .quote-template span {
+            font-size: 1em;
+        }
+
+        .quote-template .author {
+            font-size: 0.9em;
+        }
+    }
+    </style>
+
+    <div class="container">
+        <h1>Quote Sharing App</h1>
+
+        <form on:submit={addQuote}>
+            <input type="text" bind:value={newQuote} placeholder="Enter your quote" required>
+            <input type="text" bind:value={personName} placeholder="Your name" required>
+            <button type="submit">Add Quote</button>
+        </form>
+    </div>
+
+    <div id="quote-container" class="quote-container">
+        {#each quotes as quote, index}
+            <div class="quote-template">
+                <span>"{quote.text}"</span>
+                <div class="author">- {quote.author}</div>
+                <div class="controls">
+                    <button on:click={() => shareQuote(index)}>Share</button>
+                    <button on:click={() => removeQuote(index)}>Remove</button>
+                </div>
             </div>
-        </div>
-    {/each}
-</div>
+        {/each}
+    </div>
+</body>
+</html>
