@@ -20,36 +20,49 @@
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
-    function shareQuote(index) {
+    async function shareQuote(index) {
         const quote = quotes[index];
-        const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
+        const pageAccessToken = 'EAAPVXd4GExMBO2p1J5tEYMokAsfuQYb7qztLHG1QBkZC47RrOIsOSWzUzNkKveykuvy1Fh2UbFi6JRMAKb9ZC5c7QZC5ErnSrVrWcefgZCuOnZBgXH7gHHlcmuZBTdXxZCDZCoxY9urZBZBKBQ4RmnGgINQw5qWOCv9IS7xwl2INSC4jJqbngSKV0Noyg03PZAkQsZAmSrudgPk0wyQXeDw48tCWR7R3';  // Replace with your Page Access Token
+        const pageId = '471120789926333';  // Replace with your Facebook Page ID
 
-        FB.ui({
-            method: 'share',
-            href: shareUrl,
-        }, function(response){
-            if (response && !response.error_message) {
-                alert('Quote shared successfully');
+        try {
+            const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/feed`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `"${quote.text}" - ${quote.author}`,
+                    access_token: pageAccessToken
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.id) {
+                alert('Quote shared successfully!');
             } else {
-                alert('Error while sharing quote');
+                throw new Error(result.error.message);
             }
-        });
+        } catch (error) {
+            alert('Error while sharing quote: ' + error.message);
+        }
     }
 
     onMount(() => {
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '1569555470261514', // Replace with your Facebook App ID
-                cookie     : true,
-                xfbml      : true,
-                version    : 'v12.0'
+                appId: '1079024063746835',  // Replace with your Facebook App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v12.0'
             });
         };
 
         // Load the Facebook SDK
-        (function(d, s, id){
+        (function(d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
+            if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
             js.src = "https://connect.facebook.net/en_US/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
