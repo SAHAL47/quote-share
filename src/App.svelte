@@ -35,7 +35,7 @@
         try {
             const response = await axios.post('https://app.ayrshare.com/api/post', shareData, {
                 headers: {
-                    'Authorization': `Bearer YOUR_AYRSHARE_API_KEY`,  // Replace with your Ayrshare API key
+                    'Authorization': `7H1VC6Y-8G9MZF8-QAXY0RV-B6BDYXG`,  // Replace with your Ayrshare API key
                     'Content-Type': 'application/json'
                 }
             });
