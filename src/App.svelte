@@ -1,6 +1,4 @@
 <script>
-    import { onMount } from 'svelte';
-
     let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
     let newQuote = '';
     let personName = '';
@@ -20,22 +18,20 @@
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
-    // Function to generate an image and share it
     async function shareQuote(index) {
         const quote = quotes[index];
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
 
-        img.src = '/pexel.jpg'; // Your background image path
-        img.crossOrigin = "anonymous"; // Allow cross-origin image loading
+        img.src = '/pexel.jpg';
+        img.crossOrigin = "anonymous";
 
         img.onload = () => {
             canvas.width = img.width;
             canvas.height = img.height;
             ctx.drawImage(img, 0, 0);
 
-            // Add quote text
             ctx.font = '24px Arial';
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
@@ -49,11 +45,9 @@
 
             wrapText(ctx, `"${quote.text}"`, x, y, maxWidth, lineHeight);
 
-            // Add author name
             ctx.font = '20px Arial';
             ctx.fillText(`- ${quote.author}`, x, y + 50);
 
-            // Generate the image URL
             canvas.toBlob(async (blob) => {
                 const file = new File([blob], 'quote.png', { type: 'image/png' });
                 const shareData = {
@@ -63,16 +57,28 @@
                 };
 
                 try {
-                    await navigator.share(shareData);
-                    alert('Quote shared successfully');
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share(shareData);
+                        alert('Quote shared successfully');
+                    } else {
+                        throw new Error("Sharing not supported or permission denied.");
+                    }
                 } catch (err) {
-                    alert('Error while sharing quote: ' + err.message);
+                    // Fallback: download the image or copy to clipboard
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'quote.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    alert('Sharing not supported. Image downloaded instead.');
                 }
             });
         };
     }
 
-    // Function to wrap text within a certain width
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
         const words = text.split(' ');
         let line = '';
