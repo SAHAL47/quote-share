@@ -6,6 +6,7 @@
     let newQuote = '';
     let personName = '';
 
+    // Function to add a new quote
     function addQuote(event) {
         event.preventDefault();
         if (newQuote && personName) {
@@ -16,22 +17,25 @@
         }
     }
 
+    // Function to remove a quote
     function removeQuote(index) {
         quotes = quotes.filter((_, i) => i !== index);
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
+    // Function to share a quote on social media
     async function shareQuote(index) {
         const quote = quotes[index];
         const shareData = {
             post: `"${quote.text}" - ${quote.author}`,
-            platforms: ["instagram", "reddit", "twitter"]
+            platforms: ["instagram", "reddit", "twitter"],
+            mediaUrls: ["https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg"] // Example image URL
         };
 
         try {
             const response = await axios.post('https://app.ayrshare.com/api/post', shareData, {
                 headers: {
-                    'Authorization': `Bearer 7H1VC6Y-8G9MZF8-QAXY0RV-B6BDYXG`,
+                    'Authorization': `Bearer YOUR_AYRSHARE_API_KEY`,  // Replace with your Ayrshare API key
                     'Content-Type': 'application/json'
                 }
             });
