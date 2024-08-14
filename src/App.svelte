@@ -20,20 +20,77 @@
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
+    // Function to generate an image and share it
     async function shareQuote(index) {
         const quote = quotes[index];
-        const shareData = {
-            title: 'Quote Sharing App',
-            text: `"${quote.text}" - ${quote.author}`,
-            url: 'https://quoteshare-beta.vercel.app'
-        };
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
 
-        try {
-            await navigator.share(shareData);
-            alert('Quote shared successfully');
-        } catch (err) {
-            alert('Error while sharing quote: ' + err.message);
+        img.src = '/pexel.jpg'; // Your background image path
+        img.crossOrigin = "anonymous"; // Allow cross-origin image loading
+
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            // Add quote text
+            ctx.font = '24px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'black';
+            ctx.shadowBlur = 7;
+
+            const maxWidth = canvas.width - 40;
+            const lineHeight = 30;
+            let x = canvas.width / 2;
+            let y = canvas.height / 2;
+
+            wrapText(ctx, `"${quote.text}"`, x, y, maxWidth, lineHeight);
+
+            // Add author name
+            ctx.font = '20px Arial';
+            ctx.fillText(`- ${quote.author}`, x, y + 50);
+
+            // Generate the image URL
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'quote.png', { type: 'image/png' });
+                const shareData = {
+                    title: 'Quote Sharing App',
+                    text: 'Check out this quote I made!',
+                    files: [file]
+                };
+
+                try {
+                    await navigator.share(shareData);
+                    alert('Quote shared successfully');
+                } catch (err) {
+                    alert('Error while sharing quote: ' + err.message);
+                }
+            });
+        };
+    }
+
+    // Function to wrap text within a certain width
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        let testLine = '';
+        let testWidth;
+
+        for (let n = 0; n < words.length; n++) {
+            testLine = line + words[n] + ' ';
+            testWidth = ctx.measureText(testLine).width;
+            if (testWidth > maxWidth && n > 0) {
+                ctx.fillText(line, x, y);
+                line = words[n] + ' ';
+                y += lineHeight;
+            } else {
+                line = testLine;
+            }
         }
+        ctx.fillText(line, x, y);
     }
 </script>
 
