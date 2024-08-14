@@ -31,13 +31,15 @@
         try {
             const response = await axios.post('https://app.ayrshare.com/api/post', shareData, {
                 headers: {
-                    'Authorization': `7H1VC6Y-8G9MZF8-QAXY0RV-B6BDYXG`,
+                    'Authorization': `Bearer 7H1VC6Y-8G9MZF8-QAXY0RV-B6BDYXG`,
                     'Content-Type': 'application/json'
                 }
             });
+            console.log('Response:', response);
             alert('Quote shared successfully');
         } catch (err) {
-            alert('Error while sharing quote: ' + err.message);
+            console.error('Error:', err.response ? err.response.data : err.message);
+            alert('Error while sharing quote: ' + (err.response ? err.response.data.message : err.message));
         }
     }
 </script>
