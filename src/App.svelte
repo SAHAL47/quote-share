@@ -35,7 +35,7 @@
         try {
             const response = await axios.post('https://app.ayrshare.com/api/post', shareData, {
                 headers: {
-                    'Authorization': `7H1VC6Y-8G9MZF8-QAXY0RV-B6BDYXG`,  // Replace with your Ayrshare API key
+                    'Authorization': `Bearer 7H1VC6Y-8G9MZF8-QAXY0RV-B6BDYXG`,  // Ensure 'Bearer' is included
                     'Content-Type': 'application/json'
                 }
             });
@@ -43,7 +43,7 @@
             alert('Quote shared successfully');
         } catch (err) {
             console.error('Error:', err.response ? err.response.data : err.message);
-            alert('Error while sharing quote: ' + (err.response ? err.response.data.message : err.message));
+            alert('Error while sharing quote: ' + (err.response && err.response.data && err.response.data.message ? err.response.data.message : err.message));
         }
     }
 </script>
