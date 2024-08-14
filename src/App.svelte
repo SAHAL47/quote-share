@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+
     let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
     let newQuote = '';
     let personName = '';
@@ -18,96 +20,42 @@
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
-    async function shareQuote(index) {
+    function shareQuote(index) {
         const quote = quotes[index];
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
+        const shareUrl = `https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/api/quote?text=${encodeURIComponent(quote.text)}&author=${encodeURIComponent(quote.author)}`;
 
-        img.src = '/pexel.jpg';
-        img.crossOrigin = "anonymous";
+        FB.ui({
+            method: 'share',
+            href: shareUrl,
+        }, function(response){
+            if (response && !response.error_message) {
+                alert('Quote shared successfully');
+            } else {
+                alert('Error while sharing quote');
+            }
+        });
+    }
 
-        img.onload = () => {
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-
-            ctx.font = '24px Arial';
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.shadowColor = 'black';
-            ctx.shadowBlur = 7;
-
-            const maxWidth = canvas.width - 40;
-            const lineHeight = 30;
-            let x = canvas.width / 2;
-            let y = canvas.height / 2;
-
-            wrapText(ctx, `"${quote.text}"`, x, y, maxWidth, lineHeight);
-
-            ctx.font = '20px Arial';
-            ctx.fillText(`- ${quote.author}`, x, y + 50);
-
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], 'quote.png', { type: 'image/png' });
-                const shareData = {
-                    title: 'Quote Sharing App',
-                    text: 'Check out this quote I made!',
-                    files: [file]
-                };
-
-                try {
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share(shareData);
-                        alert('Quote shared successfully');
-                    } else {
-                        throw new Error("Sharing not supported or permission denied.");
-                    }
-                } catch (err) {
-                    // Fallback: download the image or copy to clipboard
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'quote.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                    alert('Sharing not supported. Image downloaded instead.');
-                }
+    onMount(() => {
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '1569555470261514', // Replace with your Facebook App ID
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v12.0'
             });
         };
-    }
 
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-        const words = text.split(' ');
-        let line = '';
-        let testLine = '';
-        let testWidth;
-
-        for (let n = 0; n < words.length; n++) {
-            testLine = line + words[n] + ' ';
-            testWidth = ctx.measureText(testLine).width;
-            if (testWidth > maxWidth && n > 0) {
-                ctx.fillText(line, x, y);
-                line = words[n] + ' ';
-                y += lineHeight;
-            } else {
-                line = testLine;
-            }
-        }
-        ctx.fillText(line, x, y);
-    }
+        // Load the Facebook SDK
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    });
 </script>
-
-<svelte:head>
-    <title>Quote Sharing App</title>
-    <meta property="og:title" content="Quote Sharing App" />
-    <meta property="og:description" content="Share your favorite quotes with friends." />
-    <meta property="og:image" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg" />
-    <meta property="og:url" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app" />
-    <meta property="og:type" content="website" />
-</svelte:head>
 
 <style>
     :global(body) {
@@ -168,7 +116,7 @@
     .quote-template {
         position: relative;
         padding: 20px;
-        background: url('/pexel.jpg') no-repeat center center;
+        background: url('/pexel.jpg') no-repeat center center, #333;
         background-size: cover;
         border-radius: 8px;
         color: white;
