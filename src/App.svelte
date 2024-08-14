@@ -22,53 +22,29 @@
 
     async function shareQuote(index) {
         const quote = quotes[index];
-        const pageAccessToken = 'EAAPVXd4GExMBO2p1J5tEYMokAsfuQYb7qztLHG1QBkZC47RrOIsOSWzUzNkKveykuvy1Fh2UbFi6JRMAKb9ZC5c7QZC5ErnSrVrWcefgZCuOnZBgXH7gHHlcmuZBTdXxZCDZCoxY9urZBZBKBQ4RmnGgINQw5qWOCv9IS7xwl2INSC4jJqbngSKV0Noyg03PZAkQsZAmSrudgPk0wyQXeDw48tCWR7R3';  // Replace with your Page Access Token
-        const pageId = '471120789926333';  // Replace with your Facebook Page ID
-
-        try {
-            const response = await fetch(`https://graph.facebook.com/v12.0/${pageId}/feed`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `"${quote.text}" - ${quote.author}`,
-                    access_token: pageAccessToken
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.id) {
-                alert('Quote shared successfully!');
-            } else {
-                throw new Error(result.error.message);
-            }
-        } catch (error) {
-            alert('Error while sharing quote: ' + error.message);
-        }
-    }
-
-    onMount(() => {
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId: '1079024063746835',  // Replace with your Facebook App ID
-                cookie: true,
-                xfbml: true,
-                version: 'v12.0'
-            });
+        const shareData = {
+            title: 'Quote Sharing App',
+            text: `"${quote.text}" - ${quote.author}`,
+            url: 'https://quoteshare-beta.vercel.app'
         };
 
-        // Load the Facebook SDK
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    });
+        try {
+            await navigator.share(shareData);
+            alert('Quote shared successfully');
+        } catch (err) {
+            alert('Error while sharing quote: ' + err.message);
+        }
+    }
 </script>
+
+<svelte:head>
+    <title>Quote Sharing App</title>
+    <meta property="og:title" content="Quote Sharing App" />
+    <meta property="og:description" content="Share your favorite quotes with friends." />
+    <meta property="og:image" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg" />
+    <meta property="og:url" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app" />
+    <meta property="og:type" content="website" />
+</svelte:head>
 
 <style>
     :global(body) {
@@ -129,7 +105,7 @@
     .quote-template {
         position: relative;
         padding: 20px;
-        background: url('/pexel.jpg') no-repeat center center, #333;
+        background: url('/pexel.jpg') no-repeat center center;
         background-size: cover;
         border-radius: 8px;
         color: white;
