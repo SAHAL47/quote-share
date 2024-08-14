@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import axios from 'axios';
 
     let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
     let newQuote = '';
@@ -23,13 +24,17 @@
     async function shareQuote(index) {
         const quote = quotes[index];
         const shareData = {
-            title: 'Quote Sharing App',
-            text: `"${quote.text}" - ${quote.author}`,
-            url: 'https://quoteshare-beta.vercel.app'
+            post: `"${quote.text}" - ${quote.author}`,
+            platforms: ["instagram", "reddit", "twitter"]
         };
 
         try {
-            await navigator.share(shareData);
+            const response = await axios.post('https://app.ayrshare.com/api/post', shareData, {
+                headers: {
+                    'Authorization': `Bearer YOUR_AYRSHARE_API_KEY`,
+                    'Content-Type': 'application/json'
+                }
+            });
             alert('Quote shared successfully');
         } catch (err) {
             alert('Error while sharing quote: ' + err.message);
