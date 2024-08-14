@@ -25,7 +25,7 @@
         const shareData = {
             title: 'Quote Sharing App',
             text: `"${quote.text}" - ${quote.author}`,
-            url: 'https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app'
+            url: 'https://quoteshare-beta.vercel.app'
         };
 
         try {
