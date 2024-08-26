@@ -44,6 +44,26 @@
     <meta property="og:image" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app/pexel.jpg" />
     <meta property="og:url" content="https://quoteshare-mp70uoth3-sahal-kunnatteyils-projects.vercel.app" />
     <meta property="og:type" content="website" />
+
+    <!-- JSON-LD Structured Data -->
+    {#if quotes.length > 0}
+        <script type="application/ld+json">
+            {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "CreativeWork",
+                "name": "Quote Sharing App",
+                "description": "Share your favorite quotes with friends.",
+                "mainEntity": quotes.map(quote => ({
+                    "@type": "Quotation",
+                    "text": quote.text,
+                    "author": {
+                        "@type": "Person",
+                        "name": quote.author
+                    }
+                }))
+            })}
+        </script>
+    {/if}
 </svelte:head>
 
 <style>
